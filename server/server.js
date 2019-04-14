@@ -5,7 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
-const { mongoose } = require('./db/mongoose');
+// const { mongoose } = require('./db/mongoose');
 const Todo = require('./models/todo');
 const User = require('./models/user');
 const {authenticate} = require('./middleware/authenticate');
@@ -53,7 +53,7 @@ app.get('/todos/:id', (req, res) => {
       todo
     });
   }).catch((e) => {
-    res.status(400).send();
+    res.status(400).send(e);
   });
 });
 
@@ -73,7 +73,7 @@ app.delete('/todos/:id', (req, res) => {
       todo
     });
   }).catch((e) => {
-    res.status(400).send();
+    res.status(400).send(e);
   });
 });
 
@@ -141,6 +141,14 @@ app.post('/users/login', (req, res) => {
         .send(user);
     }));
   }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.delete('/users/me/token', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }, () => {
     res.status(400).send();
   });
 });
